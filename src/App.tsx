@@ -1,639 +1,568 @@
 import { useMemo, useState } from 'react';
 
-type HarnessStageId = 'scope' | 'compose' | 'run' | 'review' | 'ship';
-type HarnessView = 'matrix' | 'context' | 'packages';
-type ProviderId = 'openai' | 'anthropic' | 'google' | 'local';
-type ModeId = 'interactive' | 'print' | 'rpc' | 'sdk';
 type InstallId = 'curl' | 'npm' | 'pnpm' | 'bun';
+type ThemeMode = 'auto' | 'light' | 'dark';
+type ProviderId =
+  | 'openai'
+  | 'anthropic'
+  | 'google'
+  | 'mistral'
+  | 'xai'
+  | 'deepseek';
+type ModeId = 'interactive' | 'json' | 'rpc' | 'sdk';
 
-interface HarnessStage {
-  id: HarnessStageId;
-  step: string;
-  title: string;
-  gate: string;
-  stance: 'single-agent' | 'optional helper' | 'recommended helper' | 'required helper';
-  riskQuestion: string;
-  skills: string[];
-  extensions: string[];
-  packageName: string;
-  budget: string;
-  baseRisk: number;
-  evidence: string[];
-  followUps: string[];
-}
-
-interface RiskSignal {
-  id: string;
+interface InstallCommand {
+  id: InstallId;
   label: string;
-  weight: number;
-  defaultFor: HarnessStageId[];
+  command: string;
 }
 
 interface Provider {
   id: ProviderId;
-  label: string;
-  model: string;
-  role: string;
+  name: string;
+  models: string;
+  command: string;
+  shortcut: string;
 }
 
-interface ModeDefinition {
+interface Mode {
   id: ModeId;
   label: string;
+  headline: string;
   command: string;
-  output: string;
+  detail: string;
 }
 
-const HARNESS_STAGES: HarnessStage[] = [
+const navItems = [
+  { label: 'Home', href: '#home' },
+  { label: 'Docs', href: '#docs' },
+  { label: 'News', href: '#news' },
+  { label: 'Packages', href: '#packages' },
+  { label: 'Models', href: '#models' },
+];
+
+const installCommands: InstallCommand[] = [
   {
-    id: 'scope',
-    step: '01',
-    title: 'Scope',
-    gate: 'Type 1 boundary',
-    stance: 'single-agent',
-    riskQuestion: 'Can this decision be reversed without rewriting ownership, data, or customer trust?',
-    skills: ['grill-me', 'ideas-radar', 'todo-router-audit'],
-    extensions: ['boundary-map', 'decision-log'],
-    packageName: '@type1skills/pi-boundary',
-    budget: 'economy',
-    baseRisk: 16,
-    evidence: ['owner named', 'non-goals written', 'rollback path known'],
-    followUps: [
-      'Narrow the boundary to files the agent may own.',
-      'Name the first proof that would make a human comfortable.',
-    ],
+    id: 'curl',
+    label: 'curl',
+    command: 'curl -fsSL https://www.type1skills.com/install.sh | sh',
+  },
+  { id: 'npm', label: 'npm', command: 'npm install -g type1skills' },
+  { id: 'pnpm', label: 'pnpm', command: 'pnpm add -g type1skills' },
+  { id: 'bun', label: 'bun', command: 'bun add -g type1skills' },
+];
+
+const themeModes: Array<{ id: ThemeMode; label: string }> = [
+  { id: 'auto', label: 'Auto' },
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+];
+
+const providerNames = [
+  'OpenAI',
+  'Anthropic',
+  'Google',
+  'Mistral',
+  'Meta',
+  'Cohere',
+  'Groq',
+  'xAI',
+  'Perplexity',
+  'DeepSeek',
+  'Together',
+  'Cerebras',
+  'Fireworks',
+  'AWS Bedrock',
+  'Azure AI',
+  'Ollama',
+];
+
+const providers: Provider[] = [
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    models: 'GPT-5.5, GPT-5.4, o-series',
+    command: 'model openai/gpt-5.5',
+    shortcut: 'Ctrl+M then 1',
   },
   {
-    id: 'compose',
-    step: '02',
-    title: 'Compose',
-    gate: 'Prompt and context',
-    stance: 'optional helper',
-    riskQuestion: 'Will this context package steer the agent into a path that is hard to unwind?',
-    skills: ['skill-regression-check', 'skills-radar', 'ontology'],
-    extensions: ['prompt-pack', 'context-budget', 'theme-kit'],
-    packageName: '@type1skills/pi-context',
-    budget: 'standard',
-    baseRisk: 24,
-    evidence: ['instructions layered', 'compaction policy set', 'context source cited'],
-    followUps: [
-      'Remove context that would make the agent overconfident.',
-      'Switch model before running if the risk lens changed.',
-    ],
+    id: 'anthropic',
+    name: 'Anthropic',
+    models: 'Claude Sonnet, Claude Opus',
+    command: 'model anthropic/claude-sonnet',
+    shortcut: 'Ctrl+M then 2',
   },
   {
-    id: 'run',
-    step: '03',
-    title: 'Run',
-    gate: 'Steerable execution',
-    stance: 'recommended helper',
-    riskQuestion: 'Is the agent allowed to continue after new evidence changes the risk class?',
-    skills: ['route-scaffolding', 'solve-next-project', 'systematic-debugging'],
-    extensions: ['live-steer', 'branch-history', 'model-switch'],
-    packageName: '@type1skills/pi-runner',
-    budget: 'deep',
-    baseRisk: 38,
-    evidence: ['owned files locked', 'stop conditions armed', 'follow-up channel open'],
-    followUps: [
-      'Steer the run with a new constraint instead of restarting the session.',
-      'Branch the conversation tree before trying a riskier path.',
-    ],
+    id: 'google',
+    name: 'Google',
+    models: 'Gemini Pro, Gemini Flash',
+    command: 'model google/gemini-pro',
+    shortcut: 'Ctrl+M then 3',
   },
   {
-    id: 'review',
-    step: '04',
-    title: 'Review',
-    gate: 'Evidence bundle',
-    stance: 'required helper',
-    riskQuestion: 'Would a reviewer merge this without knowing the tests, residual risk, and rollback plan?',
-    skills: ['verification-before-completion', 'security-review', 'test-it'],
-    extensions: ['evidence-pack', 'risk-review', 'test-ledger'],
-    packageName: '@type1skills/pi-review',
-    budget: 'deep',
-    baseRisk: 44,
-    evidence: ['tests linked', 'residual risk explicit', 'reviewer questions answered'],
-    followUps: [
-      'Ask the agent to defend the weakest piece of evidence.',
-      'Keep the pack editable so humans can correct the risk story.',
-    ],
+    id: 'mistral',
+    name: 'Mistral',
+    models: 'Large, Small, Codestral',
+    command: 'model mistral/codestral',
+    shortcut: 'Ctrl+M then 4',
   },
   {
-    id: 'ship',
-    step: '05',
-    title: 'Ship',
-    gate: 'Release hold',
-    stance: 'single-agent',
-    riskQuestion: 'What would make this release irreversible after it leaves the local harness?',
-    skills: ['workspace-preview', 'release-enforcer', 'git-it'],
-    extensions: ['release-check', 'share-export'],
-    packageName: '@type1skills/pi-release',
-    budget: 'standard',
-    baseRisk: 34,
-    evidence: ['preview reachable', 'CI truth checked', 'export shared'],
-    followUps: [
-      'Hold release when auth, CI, PR, or deploy truth is uncertain.',
-      'Export the conversation branch that explains the final decision.',
-    ],
+    id: 'xai',
+    name: 'xAI',
+    models: 'Grok code and reasoning models',
+    command: 'model xai/grok-code',
+    shortcut: 'Ctrl+M then 5',
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    models: 'Reasoner, coder, chat',
+    command: 'model deepseek/deepseek-reasoner',
+    shortcut: 'Ctrl+M then 6',
   },
 ];
 
-const RISK_SIGNALS: RiskSignal[] = [
+const historyCommands = [
   {
-    id: 'irreversible-data',
-    label: 'Data shape or migration is hard to undo',
-    weight: 24,
-    defaultFor: ['scope', 'ship'],
+    command: 'tree',
+    title: 'Branch-aware navigation',
+    text: 'Walk the session tree, fork a safer attempt, and keep the Type 1 decision path visible.',
   },
   {
-    id: 'auth-billing',
-    label: 'Auth, billing, entitlement, or permission boundary',
-    weight: 26,
-    defaultFor: ['scope', 'review'],
+    command: 'export',
+    title: 'HTML session archive',
+    text: 'Turn a conversation into a durable HTML artifact for reviews, retros, or handoff.',
   },
   {
-    id: 'agent-edits',
-    label: 'Agent may edit production-owned files',
-    weight: 18,
-    defaultFor: ['run'],
-  },
-  {
-    id: 'context-drift',
-    label: 'Prompt, skill, or context drift changes behavior',
-    weight: 16,
-    defaultFor: ['compose'],
-  },
-  {
-    id: 'no-rollback',
-    label: 'Rollback or kill switch is not yet named',
-    weight: 22,
-    defaultFor: ['review', 'ship'],
-  },
-  {
-    id: 'weak-evidence',
-    label: 'Evidence is a summary instead of a reproducible proof',
-    weight: 14,
-    defaultFor: ['review'],
+    command: 'share',
+    title: 'Gist or URL handoff',
+    text: 'Share a branch without flattening the choices that led to it.',
   },
 ];
 
-const PROVIDERS: Provider[] = [
-  { id: 'openai', label: 'OpenAI', model: 'gpt-5.5', role: 'deep reasoning lead' },
-  { id: 'anthropic', label: 'Anthropic', model: 'claude-sonnet', role: 'review challenger' },
-  { id: 'google', label: 'Google', model: 'gemini-pro', role: 'wide context pass' },
-  { id: 'local', label: 'Local', model: 'qwen3-coder', role: 'private repo pass' },
+const contextItems = [
+  {
+    title: 'AGENTS.md',
+    text: 'Project instructions live beside the code and travel with the repo.',
+  },
+  {
+    title: 'SYSTEM.md',
+    text: 'Overwrite or extend the system prompt without rebuilding the harness.',
+  },
+  {
+    title: 'Automatic compaction',
+    text: 'Context compresses near the limit while preserving the decision spine.',
+  },
+  {
+    title: 'On-demand skills',
+    text: 'Skills load only when the task calls for them.',
+  },
+  {
+    title: 'Prompt templates',
+    text: 'Reusable prompts make routine work consistent without hard-coding the core.',
+  },
+  {
+    title: 'Dynamic context',
+    text: 'Extensions can inject, filter, retrieve with RAG, or attach long memory.',
+  },
 ];
 
-const MODES: ModeDefinition[] = [
+const modes: Mode[] = [
   {
     id: 'interactive',
     label: 'Interactive',
-    command: 'type1skills run',
-    output: 'branching chat with live steering',
+    headline: 'TUI for live work',
+    command: 'type1skills',
+    detail: 'A complete terminal interface for steering, branching, themes, and live model changes.',
   },
   {
-    id: 'print',
-    label: 'Print / JSON',
-    command: 'type1skills print --json',
-    output: 'structured evidence for CI or logs',
+    id: 'json',
+    label: 'Print/JSON',
+    headline: 'Script-friendly output',
+    command: 'type1skills print --json "review this diff"',
+    detail: 'Use Type1Skills in CI, shell scripts, and event-stream consumers.',
   },
   {
     id: 'rpc',
     label: 'RPC',
-    command: 'type1skills rpc --port 4317',
-    output: 'long-running harness service',
+    headline: 'stdin/stdout protocol',
+    command: 'type1skills rpc',
+    detail: 'Drive the harness from another process while keeping the protocol small.',
   },
   {
     id: 'sdk',
     label: 'SDK',
-    command: 'import { createHarness } from "type1skills"',
-    output: 'embedded agent control layer',
+    headline: 'Embed in apps',
+    command: 'import { createHarness } from "type1skills/sdk"',
+    detail: 'Ship Type1Skills inside your own product, editor, or internal platform.',
   },
 ];
 
-const INSTALL_COMMANDS: Record<InstallId, string> = {
-  curl: 'curl -fsSL https://type1skills.com/install.sh | sh',
-  npm: 'npm install -g type1skills',
-  pnpm: 'pnpm add -g type1skills',
-  bun: 'bun add -g type1skills',
-};
-
-const EXTENSIBILITY = [
-  ['Extensions', 'Add detectors, model adapters, export sinks, review gates, and release holds without widening core.'],
-  ['Skills', 'Package reusable agent behaviors with stance, budget, evidence, and stop conditions.'],
-  ['Prompt templates', 'Version prompt packs as context contracts instead of hidden chat folklore.'],
-  ['Themes', 'Skin the harness for a team, workspace, or product without changing runtime behavior.'],
+const primitiveFeatures = [
+  'Sub-agents',
+  'Plan mode',
+  'Permission gates',
+  'Path protection',
+  'SSH execution',
+  'Sandboxing',
+  'MCP integration through an extension',
+  'Custom editors',
+  'Status bars',
+  'Overlays',
 ];
 
-const NOT_BUILT = [
-  'MCP in core',
-  'Subagents as a mandatory primitive',
-  'Plan mode ceremony',
-  'Permission popups as product strategy',
-  'Embedded to-do systems',
-  'Provider lock-in',
+const notBuilt = [
+  'No MCP.',
+  'No sub-agents.',
+  'No permission popups.',
+  'No plan mode.',
+  'No built-in to-dos.',
+  'No background bash.',
 ];
 
-function defaultSignalIds(stageId: HarnessStageId): string[] {
-  return RISK_SIGNALS
-    .filter((signal) => signal.defaultFor.includes(stageId))
-    .map((signal) => signal.id);
-}
+const communityLinks = [
+  { label: 'GitHub', href: 'https://github.com/vibelibs/type1skills' },
+  { label: 'npm', href: 'https://www.npmjs.com/package/type1skills' },
+  { label: 'Discord', href: 'https://discord.gg/type1skills' },
+];
 
-function riskLabel(score: number): string {
-  if (score >= 74) {
-    return 'Type 1 hold';
-  }
-  if (score >= 48) {
-    return 'Reviewer gate';
-  }
-  return 'Reversible';
-}
+function App() {
+  const [activeInstall, setActiveInstall] = useState<InstallId>('curl');
+  const [themeMode, setThemeMode] = useState<ThemeMode>('auto');
+  const [activeProvider, setActiveProvider] = useState<ProviderId>('openai');
+  const [activeMode, setActiveMode] = useState<ModeId>('interactive');
 
-function riskTone(score: number): string {
-  if (score >= 74) {
-    return 'hold';
-  }
-  if (score >= 48) {
-    return 'gate';
-  }
-  return 'clear';
-}
-
-function AppLogo() {
-  return (
-    <div className="app-logo" aria-hidden="true">
-      <span>T1</span>
-    </div>
-  );
-}
-
-export default function App() {
-  const [activeStageId, setActiveStageId] = useState<HarnessStageId>('run');
-  const [activeProviderId, setActiveProviderId] = useState<ProviderId>('openai');
-  const [activeModeId, setActiveModeId] = useState<ModeId>('interactive');
-  const [activeInstallId, setActiveInstallId] = useState<InstallId>('curl');
-  const [activeView, setActiveView] = useState<HarnessView>('matrix');
-  const [selectedSignalIds, setSelectedSignalIds] = useState<string[]>(() => defaultSignalIds('run'));
-
-  const activeStage = HARNESS_STAGES.find((stage) => stage.id === activeStageId) ?? HARNESS_STAGES[0];
-  const activeProvider = PROVIDERS.find((provider) => provider.id === activeProviderId) ?? PROVIDERS[0];
-  const activeMode = MODES.find((mode) => mode.id === activeModeId) ?? MODES[0];
-
-  const selectedSignals = useMemo(
-    () => RISK_SIGNALS.filter((signal) => selectedSignalIds.includes(signal.id)),
-    [selectedSignalIds],
+  const install = useMemo(
+    () => installCommands.find((item) => item.id === activeInstall) ?? installCommands[0],
+    [activeInstall],
   );
 
-  const riskScore = Math.min(
-    100,
-    activeStage.baseRisk + selectedSignals.reduce((sum, signal) => sum + signal.weight, 0),
+  const provider = useMemo(
+    () => providers.find((item) => item.id === activeProvider) ?? providers[0],
+    [activeProvider],
   );
-  const tone = riskTone(riskScore);
 
-  const harnessPreview = [
-    `type1skills harness ${activeStage.id}`,
-    `  --mode ${activeMode.id}`,
-    `  --provider ${activeProvider.id}`,
-    `  --model ${activeProvider.model}`,
-    `  --package ${activeStage.packageName}`,
-    `  --risk ${riskScore}`,
-  ].join('\n');
-
-  function switchStage(stageId: HarnessStageId) {
-    setActiveStageId(stageId);
-    setSelectedSignalIds(defaultSignalIds(stageId));
-  }
-
-  function toggleSignal(signalId: string) {
-    setSelectedSignalIds((current) => {
-      if (current.includes(signalId)) {
-        return current.filter((id) => id !== signalId);
-      }
-
-      return [...current, signalId];
-    });
-  }
+  const mode = useMemo(() => modes.find((item) => item.id === activeMode) ?? modes[0], [activeMode]);
 
   return (
-    <div className="site-shell">
-      <header className="topbar">
-        <a className="brand-lockup" href="#top" aria-label="Type1Skills home">
-          <AppLogo />
+    <div className={`site-shell theme-${themeMode}`}>
+      <header className="site-header">
+        <a className="brand" href="#home" aria-label="Type1Skills home">
+          <span className="brand-mark">T1</span>
           <span>Type1Skills</span>
         </a>
-        <nav className="topnav" aria-label="Primary navigation">
-          <a href="#harness">Harness</a>
-          <a href="#matrix">Matrix</a>
-          <a href="#packages">Pi packages</a>
-          <a href="#philosophy">Philosophy</a>
+        <nav className="main-nav" aria-label="Main navigation">
+          {navItems.map((item) => (
+            <a key={item.href} href={item.href}>
+              {item.label}
+            </a>
+          ))}
         </nav>
+        <div className="theme-switcher" aria-label="Theme">
+          {themeModes.map((item) => (
+            <button
+              key={item.id}
+              className={themeMode === item.id ? 'is-active' : ''}
+              type="button"
+              onClick={() => setThemeMode(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       </header>
 
-      <main id="top">
-        <section className="hero-section" id="harness">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <p className="eyebrow">Type 1 risk harness for code agents</p>
-              <h1>Adapt the coding agent to your workflow, not the other way around.</h1>
-              <p className="hero-lede">
-                Type1Skills is a code-agent harness built around Type 1 impact: decisions that become expensive,
-                risky, or impossible to reverse once the agent acts.
-              </p>
-              <div className="install-panel" aria-label="Installation command">
-                <div className="install-tabs" role="tablist" aria-label="Installer">
-                  {(Object.keys(INSTALL_COMMANDS) as InstallId[]).map((installer) => (
-                    <button
-                      key={installer}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeInstallId === installer}
-                      className={activeInstallId === installer ? 'is-active' : ''}
-                      onClick={() => setActiveInstallId(installer)}
-                    >
-                      {installer}
-                    </button>
-                  ))}
-                </div>
-                <code>{INSTALL_COMMANDS[activeInstallId]}</code>
-              </div>
-              <div className="hero-actions" aria-label="Primary actions">
-                <a className="button button-primary" href="mailto:pilots@type1skills.com?subject=Type1Skills%20harness%20pilot">
-                  Pilot intake
+      <main>
+        <section className="hero" id="home" aria-labelledby="hero-title">
+          <div className="hero-copy">
+            <p className="eyebrow">Type 1 risk coding harness</p>
+            <h1 id="hero-title">There are many agent harnesses, but this one is yours.</h1>
+            <p className="hero-lede">
+              Type1Skills adapts around your workflow and treats irreversible engineering choices as
+              the spine of agent reasoning.
+            </p>
+            <div className="hero-actions" aria-label="Community links">
+              {communityLinks.map((link) => (
+                <a key={link.label} href={link.href}>
+                  {link.label}
                 </a>
-                <a className="button button-secondary" href="#matrix">
-                  Open matrix
-                </a>
-              </div>
-            </div>
-
-            <div className="harness-console" aria-label="Type1Skills harness console">
-              <div className="console-header">
-                <div>
-                  <p className="eyebrow">Live risk harness</p>
-                  <h2>{activeStage.title}</h2>
-                </div>
-                <span className={`risk-pill risk-pill-${tone}`}>{riskLabel(riskScore)}</span>
-              </div>
-
-              <div className="stage-strip" aria-label="Harness stage selector">
-                {HARNESS_STAGES.map((stage) => (
-                  <button
-                    key={stage.id}
-                    type="button"
-                    className={activeStage.id === stage.id ? 'is-active' : ''}
-                    aria-pressed={activeStage.id === stage.id}
-                    onClick={() => switchStage(stage.id)}
-                  >
-                    <span>{stage.step}</span>
-                    <strong>{stage.title}</strong>
-                  </button>
-                ))}
-              </div>
-
-              <div className="score-layout">
-                <div
-                  className={`score-meter score-meter-${tone}`}
-                  style={{ '--score': `${riskScore * 3.6}deg` } as React.CSSProperties}
-                  aria-label={`Risk score ${riskScore} out of 100`}
-                >
-                  <span>{riskScore}</span>
-                  <small>/100</small>
-                </div>
-                <div className="score-copy">
-                  <strong>{activeStage.gate}</strong>
-                  <p>{activeStage.riskQuestion}</p>
-                  <div className="score-meta">
-                    <span>{activeStage.stance}</span>
-                    <span>{activeStage.budget}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="session-tree" aria-label="Shareable conversation tree">
-                <span>root</span>
-                <span>scope</span>
-                <span className="is-active">run</span>
-                <span>review</span>
-                <span>share</span>
-              </div>
-
-              <div className="signal-list" aria-label="Risk signals">
-                {RISK_SIGNALS.map((signal) => {
-                  const checked = selectedSignalIds.includes(signal.id);
-                  return (
-                    <label key={signal.id} className={checked ? 'signal-row is-selected' : 'signal-row'}>
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleSignal(signal.id)}
-                      />
-                      <span>{signal.label}</span>
-                      <strong>+{signal.weight}</strong>
-                    </label>
-                  );
-                })}
-              </div>
+              ))}
             </div>
           </div>
-        </section>
 
-        <section className="matrix-section" id="matrix">
-          <div className="section-inner">
-            <div className="section-heading">
-              <p className="eyebrow">Merged with the Skill Matrix</p>
-              <h2>The matrix becomes the product spine.</h2>
-              <p>
-                Stance, SOUL lens, runtime budget, graph evidence, and cost drift now read as one harness contract:
-                what can run, which package owns it, what proof is required, and when humans steer.
-              </p>
+          <div className="install-panel" aria-label="Install Type1Skills">
+            <div className="install-head">
+              <span>Install Type1Skills</span>
+              <span>shell, npm, pnpm, bun</span>
             </div>
-
-            <div className="view-tabs" role="tablist" aria-label="Harness views">
-              {([
-                ['matrix', 'Matrix'],
-                ['context', 'Context'],
-                ['packages', 'Packages'],
-              ] as const).map(([view, label]) => (
+            <div className="install-tabs" role="tablist" aria-label="Install commands">
+              {installCommands.map((item) => (
                 <button
-                  key={view}
+                  key={item.id}
+                  className={activeInstall === item.id ? 'is-active' : ''}
                   type="button"
                   role="tab"
-                  aria-selected={activeView === view}
-                  className={activeView === view ? 'is-active' : ''}
-                  onClick={() => setActiveView(view)}
+                  aria-selected={activeInstall === item.id}
+                  onClick={() => setActiveInstall(item.id)}
                 >
-                  {label}
+                  {item.label}
                 </button>
               ))}
             </div>
-
-            {activeView === 'matrix' && (
-              <div className="matrix-table-wrap">
-                <table className="matrix-table">
-                  <thead>
-                    <tr>
-                      <th>Gate</th>
-                      <th>Stance</th>
-                      <th>Skills</th>
-                      <th>Extensions</th>
-                      <th>Evidence</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {HARNESS_STAGES.map((stage) => (
-                      <tr key={stage.id} className={stage.id === activeStage.id ? 'is-active' : ''}>
-                        <td>
-                          <button type="button" onClick={() => switchStage(stage.id)}>
-                            <strong>{stage.step} {stage.title}</strong>
-                            <span>{stage.gate}</span>
-                          </button>
-                        </td>
-                        <td><span className={`stance-chip stance-${stage.stance.replace(' ', '-')}`}>{stage.stance}</span></td>
-                        <td>{stage.skills.join(', ')}</td>
-                        <td>{stage.extensions.join(', ')}</td>
-                        <td>{stage.evidence.join(', ')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {activeView === 'context' && (
-              <div className="context-grid">
-                <article>
-                  <span>Instructions</span>
-                  <strong>Layered, inspectable, replaceable</strong>
-                  <p>System, repo, skill, package, and follow-up instructions stay separate so context can be tuned without rewriting the workflow.</p>
-                </article>
-                <article>
-                  <span>Compaction</span>
-                  <strong>Risk-aware memory budget</strong>
-                  <p>Conversation history is compacted around irreversible choices, evidence, and open stop conditions.</p>
-                </article>
-                <article>
-                  <span>Branching</span>
-                  <strong>Tree history with export</strong>
-                  <p>Risky paths fork into branches that can be shared as JSON, markdown, or a review pack.</p>
-                </article>
-                <article>
-                  <span>Steering</span>
-                  <strong>Follow-up while the agent runs</strong>
-                  <p>New constraints can steer the active run before the agent crosses a Type 1 boundary.</p>
-                </article>
-              </div>
-            )}
-
-            {activeView === 'packages' && (
-              <div className="package-grid">
-                {HARNESS_STAGES.map((stage) => (
-                  <article key={stage.packageName}>
-                    <span>{stage.title}</span>
-                    <strong>{stage.packageName}</strong>
-                    <code>npm i {stage.packageName}</code>
-                  </article>
-                ))}
-              </div>
-            )}
+            <pre>
+              <code>{install.command}</code>
+            </pre>
           </div>
         </section>
 
-        <section className="runtime-section">
-          <div className="section-inner runtime-grid">
-            <div className="runtime-panel">
-              <div className="section-heading compact">
-                <p className="eyebrow">Providers and models</p>
-                <h2>Switch models mid-session when the risk lens changes.</h2>
-              </div>
-              <div className="provider-grid" aria-label="Provider selector">
-                {PROVIDERS.map((provider) => (
-                  <button
-                    key={provider.id}
-                    type="button"
-                    className={activeProvider.id === provider.id ? 'is-active' : ''}
-                    aria-pressed={activeProvider.id === provider.id}
-                    onClick={() => setActiveProviderId(provider.id)}
-                  >
-                    <strong>{provider.label}</strong>
-                    <span>{provider.model}</span>
-                    <small>{provider.role}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="runtime-panel">
-              <div className="section-heading compact">
-                <p className="eyebrow">Four modes</p>
-                <h2>Interactive, JSON, RPC, or SDK.</h2>
-              </div>
-              <div className="mode-list" aria-label="Mode selector">
-                {MODES.map((mode) => (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    className={activeMode.id === mode.id ? 'is-active' : ''}
-                    aria-pressed={activeMode.id === mode.id}
-                    onClick={() => setActiveModeId(mode.id)}
-                  >
-                    <strong>{mode.label}</strong>
-                    <code>{mode.command}</code>
-                    <span>{mode.output}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <pre className="command-preview" aria-label="Harness command preview">{harnessPreview}</pre>
+        <section className="section intro-grid" id="docs" aria-labelledby="why-title">
+          <div>
+            <p className="eyebrow">Why Type1?</p>
+            <h2 id="why-title">Why Type1?</h2>
+          </div>
+          <div className="intro-copy">
+            <p>
+              Jeff Bezos described Type 1 decisions as consequential and hard to reverse. Type1Skills
+              brings that idea inside the agent harness: every branch, model switch, context choice,
+              and package install can be evaluated against its blast radius.
+            </p>
+            <p>
+              The skill matrix becomes the operating surface for deciding when to move fast, when to
+              ask for stronger evidence, and when to preserve a reversible path.
+            </p>
           </div>
         </section>
 
-        <section className="packages-section" id="packages">
-          <div className="section-inner package-layout">
-            <div>
-              <p className="eyebrow">Extensible core</p>
-              <h2>Small core, Pi packages around it.</h2>
-              <p>
-                Type1Skills keeps the harness small and expects teams to install the pieces that fit their workflow
-                through npm, pnpm, bun, or git.
-              </p>
+        <section className="section" aria-labelledby="workflow-title">
+          <div className="section-heading">
+            <p className="eyebrow">Your rules stay yours</p>
+            <h2 id="workflow-title">Change the harness, not your workflow.</h2>
+          </div>
+          <div className="feature-grid">
+            <article>
+              <h3>Extensions</h3>
+              <p>Add behavior without asking the core to own every possible workflow.</p>
+            </article>
+            <article>
+              <h3>Skills</h3>
+              <p>Load task-specific operating knowledge only when it is needed.</p>
+            </article>
+            <article>
+              <h3>Prompt templates</h3>
+              <p>Reuse proven prompts for reviews, migrations, launches, and incident drills.</p>
+            </article>
+            <article>
+              <h3>Themes</h3>
+              <p>Choose Auto, Light, or Dark and ship your own interface themes as packages.</p>
+            </article>
+          </div>
+          <div className="command-strip">
+            <span>Self-customize during a session</span>
+            <code>reload</code>
+            <span>refreshes extensions, skills, prompts, and themes without restarting.</span>
+          </div>
+        </section>
+
+        <section className="section models" id="models" aria-labelledby="models-title">
+          <div className="section-heading">
+            <p className="eyebrow">Providers and switching</p>
+            <h2 id="models-title">15+ providers, hundreds of models.</h2>
+          </div>
+          <div className="provider-cloud" aria-label="Supported providers">
+            {providerNames.map((name) => (
+              <span key={name}>{name}</span>
+            ))}
+          </div>
+          <div className="model-workbench">
+            <div className="provider-grid" role="tablist" aria-label="Model providers">
+              {providers.map((item) => (
+                <button
+                  key={item.id}
+                  className={activeProvider === item.id ? 'is-active' : ''}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeProvider === item.id}
+                  onClick={() => setActiveProvider(item.id)}
+                >
+                  <strong>{item.name}</strong>
+                  <span>{item.models}</span>
+                </button>
+              ))}
             </div>
-            <div className="extension-grid">
-              {EXTENSIBILITY.map(([label, copy]) => (
-                <article key={label}>
-                  <strong>{label}</strong>
-                  <p>{copy}</p>
+            <aside className="console-card" aria-label="Model switch preview">
+              <p>Switch model mid-session</p>
+              <pre>
+                <code>
+                  {`type1skills> ${provider.command}
+provider: ${provider.name}
+shortcut: ${provider.shortcut}
+session: preserved`}
+                </code>
+              </pre>
+            </aside>
+          </div>
+        </section>
+
+        <section className="section history" aria-labelledby="history-title">
+          <div className="section-heading">
+            <p className="eyebrow">Conversations do not have to be linear</p>
+            <h2 id="history-title">Tree-structured, shareable history.</h2>
+          </div>
+          <div className="history-layout">
+            <div className="session-tree" aria-label="Session tree preview">
+              <div className="tree-row is-active">run/main</div>
+              <div className="tree-row">run/main/risk-review</div>
+              <div className="tree-row">run/main/risk-review/provider-swap</div>
+              <div className="tree-row">run/main/risk-review/rollback-plan</div>
+            </div>
+            <div className="history-cards">
+              {historyCommands.map((item) => (
+                <article key={item.command}>
+                  <code>{item.command}</code>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="philosophy-section" id="philosophy">
-          <div className="section-inner philosophy-grid">
+        <section className="section" aria-labelledby="context-title">
+          <div className="section-heading">
+            <p className="eyebrow">Prompt, memory, and compression control</p>
+            <h2 id="context-title">Context engineering.</h2>
+          </div>
+          <div className="feature-grid context-grid">
+            {contextItems.map((item) => (
+              <article key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section steer" aria-labelledby="steer-title">
+          <div>
+            <p className="eyebrow">Live steering</p>
+            <h2 id="steer-title">Steer or follow up.</h2>
+            <p>
+              Interrupt gently while the agent is running or queue the next instruction after it
+              completes. Long work stays conversational.
+            </p>
+          </div>
+          <div className="key-grid" aria-label="Steering controls">
+            <article>
+              <kbd>Enter</kbd>
+              <h3>Message of steering</h3>
+              <p>Add course correction while the agent is still executing.</p>
+            </article>
+            <article>
+              <kbd>Alt+Enter</kbd>
+              <h3>Follow-up after completion</h3>
+              <p>Queue the next move without breaking the current run.</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="section modes" aria-labelledby="modes-title">
+          <div className="section-heading">
+            <p className="eyebrow">Use it where the work happens</p>
+            <h2 id="modes-title">Four modes.</h2>
+          </div>
+          <div className="mode-list" role="tablist" aria-label="Runtime modes">
+            {modes.map((item) => (
+              <button
+                key={item.id}
+                className={activeMode === item.id ? 'is-active' : ''}
+                type="button"
+                role="tab"
+                aria-selected={activeMode === item.id}
+                onClick={() => setActiveMode(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div className="mode-preview">
             <div>
-              <p className="eyebrow">What we did not build</p>
-              <h2>The core refuses to become a platform-shaped maze.</h2>
-              <p>
-                The harness ships with a spine: Type 1 risk, context engineering, execution steering, evidence, and
-                packaging. Everything else is expected to prove itself as an extension.
-              </p>
+              <h3>{mode.headline}</h3>
+              <p>{mode.detail}</p>
             </div>
-            <ul className="not-built-list">
-              {NOT_BUILT.map((item) => (
+            <pre>
+              <code>{mode.command}</code>
+            </pre>
+          </div>
+        </section>
+
+        <section className="section packages" id="packages" aria-labelledby="primitives-title">
+          <div className="section-heading">
+            <p className="eyebrow">Extensible by design</p>
+            <h2 id="primitives-title">Primitives, not features.</h2>
+          </div>
+          <div className="primitive-layout">
+            <div>
+              <p>
+                Extensions are the primitives for advanced behavior. Package them as Type1 packages
+                and share them through npm or git, then install third-party packages directly in Pi.
+              </p>
+              <div className="package-command">
+                <code>pi install @acme/type1-review-gate</code>
+                <code>pi install git+https://github.com/acme/type1-ssh.git</code>
+              </div>
+            </div>
+            <ul className="primitive-list">
+              {primitiveFeatures.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </div>
         </section>
+
+        <section className="section not-built" aria-labelledby="not-built-title">
+          <div className="section-heading">
+            <p className="eyebrow">Small core, large ecosystem</p>
+            <h2 id="not-built-title">What we didn't build.</h2>
+          </div>
+          <div className="not-built-grid">
+            {notBuilt.map((item) => (
+              <article key={item}>
+                <span>{item}</span>
+                <p>Available through extensions or packages when your workflow needs it.</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section get-involved" id="news" aria-labelledby="involved-title">
+          <div>
+            <p className="eyebrow">Docs, news, packages, models</p>
+            <h2 id="involved-title">Get involved with Type1.</h2>
+            <p>
+              Follow releases, publish packages, propose model adapters, and help shape the public
+              harness contract before the first stable release.
+            </p>
+          </div>
+          <div className="involved-links">
+            {communityLinks.map((link) => (
+              <a key={link.label} href={link.href}>
+                {link.label}
+              </a>
+            ))}
+            <a href="#docs">Docs</a>
+            <a href="#packages">Packages</a>
+            <a href="#models">Models</a>
+          </div>
+        </section>
       </main>
 
       <footer className="site-footer">
-        <div className="brand-lockup">
-          <AppLogo />
-          <span>Type1Skills</span>
-        </div>
-        <p>Risk-aware harnessing for agentic software work.</p>
+        <span>Tiago Andres Vaz & Contributors</span>
+        <a href="/press-kit">Press Kit</a>
+        <a href="https://github.com/vibelibs/type1skills/blob/main/LICENSE">MIT License</a>
       </footer>
     </div>
   );
 }
+
+export default App;
