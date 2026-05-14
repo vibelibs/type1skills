@@ -1,0 +1,43 @@
+{
+  "name": "type1skills",
+  "version": "0.1.0",
+  "description": "Independent public website for Type 1 Skills.",
+  "type": "commonjs",
+  "packageManager": "pnpm@10.31.0",
+  "scripts": {
+    "dev": "vite --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --strictPort",
+    "typecheck": "tsc --noEmit",
+    "pages:dev": "pnpm run build && npx wrangler pages dev dist",
+    "pages:deploy": "pnpm run build && npx wrangler pages deploy dist --project-name type1skills"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibelibs/type1skills.git"
+  },
+  "keywords": [
+    "ai-agent",
+    "coding-agent",
+    "developer-tools",
+    "type-1-decisions",
+    "cloudflare-pages"
+  ],
+  "author": "Tiago Andres Vaz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vibelibs/type1skills/issues"
+  },
+  "homepage": "https://www.type1skills.com",
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3"
+  }
+}
