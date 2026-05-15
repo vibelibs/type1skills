@@ -7,7 +7,7 @@ workspace. Keep the public site, Cloudflare Pages config, and domain contract
 here so Type1Skills can ship without coupling its release train to dataserver,
 Dataplatform, or Datagrid.
 
-Type1Skills presents the rebooted Type 1 risk harness for coding agents. The site frames the product around an extensible harness, Pi packages, context engineering, model switching, steerable execution, tree history, and evidence gates for decisions that are expensive or impossible to reverse.
+Type1Skills presents the rebooted Type 1 risk harness for coding agents. The site frames the product around an extensible harness, Type1Skills extension packs, context engineering, model switching, steerable execution, tree history, and evidence gates for decisions that are expensive or impossible to reverse.
 
 The site is intentionally static so it can deploy independently to Cloudflare Pages while the Dataplatform Growth route and workflow docs explain the same app from the product and persona side.
 

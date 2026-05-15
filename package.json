@@ -4,6 +4,7 @@
   "description": "Independent public website for Type 1 Skills.",
   "type": "commonjs",
   "files": [
+    "bin/",
     "CONTRACTS.md",
     "README.md",
     "index.html",
@@ -13,6 +14,9 @@
     "vite.config.ts"
   ],
   "packageManager": "pnpm@10.31.0",
+  "bin": {
+    "type1skills": "bin/type1skills.cjs"
+  },
   "scripts": {
     "dev": "vite --strictPort",
     "build": "vite build",

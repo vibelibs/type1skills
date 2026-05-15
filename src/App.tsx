@@ -182,50 +182,50 @@ const skillMatrix: SkillMatrixItem[] = [
     stage: 'Full pipeline',
     name: 'spark-to-ship',
     description: 'Run the whole idea-to-release lane and delegate each stage to the right skill.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
     featured: true,
   },
   {
     stage: 'IDEAS',
     name: 'new-ideas',
     description: 'Generate and compare candidate ideas before they enter incubation.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
   {
     stage: 'INCUBATING',
     name: 'cook-idea',
     description: 'Pressure-test an idea for value, feasibility, risk, and readiness.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
   {
     stage: 'APPROVING',
     name: 'approve-incubating',
     description: 'Promote a ready idea into ordered TODOs with acceptance criteria.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
   {
     stage: 'TODO',
     name: 'solve-next-todo',
     description: 'Pick the next actionable task, implement it, and run focused verification.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
   {
     stage: 'DOING',
     name: 'closeout-enforcer',
     description: 'Enforce verification, docs, and handoff evidence before work is called done.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
   {
     stage: 'DONE',
     name: 'review',
     description: 'Review completed work for bugs, regressions, risk, and missing tests.',
-    command: 'pi install @type1skills/pi-review',
+    command: 'type1skills install @type1skills/review',
   },
   {
     stage: 'DONE',
     name: 'release-enforcer',
     description: 'Prepare verified work for source control, CI, and deployment handoff.',
-    command: 'pi install @type1skills/pi-spark',
+    command: 'type1skills install @type1skills/spark',
   },
 ];
 
@@ -605,12 +605,13 @@ session: preserved`}
           <div className="primitive-layout">
             <div>
               <p>
-                Extensions are the primitives for advanced behavior. Package them as Type1 skill
-                packs, share them through the Pi registry or git, then install them directly in Pi.
+                Extensions are the primitives for advanced behavior. Package them as Type1Skills skill
+                packs, share them through npm or git, then install them with the Type1Skills CLI.
+                No separate package manager or runtime is required.
               </p>
               <div className="package-command">
-                <code>pi install @type1skills/pi-spark</code>
-                <code>pi install git+https://github.com/your-org/custom-gates.git</code>
+                <code>type1skills install @type1skills/spark</code>
+                <code>type1skills install git+https://github.com/your-org/custom-gates.git</code>
               </div>
             </div>
             <ul className="primitive-list">
@@ -659,7 +660,7 @@ session: preserved`}
       </main>
 
       <footer className="site-footer">
-        <span>Tiago Andres Vaz & Contributors</span>
+        <a href="https://github.com/vibelibs/type1skills/graphs/contributors">List of Contributors</a>
         <a href="/press-kit">Press Kit</a>
         <a href="https://github.com/vibelibs/type1skills/blob/main/LICENSE">MIT License</a>
       </footer>
