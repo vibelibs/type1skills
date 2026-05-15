@@ -10,6 +10,7 @@ type ProviderId =
   | 'xai'
   | 'deepseek';
 type ModeId = 'interactive' | 'json' | 'rpc' | 'sdk';
+type SkillStage = 'Full pipeline' | 'IDEAS' | 'INCUBATING' | 'APPROVING' | 'TODO' | 'DOING' | 'DONE';
 
 interface InstallCommand {
   id: InstallId;
@@ -33,9 +34,18 @@ interface Mode {
   detail: string;
 }
 
+interface SkillMatrixItem {
+  stage: SkillStage;
+  name: string;
+  description: string;
+  command: string;
+  featured?: boolean;
+}
+
 const navItems = [
   { label: 'Home', href: '#home' },
   { label: 'Docs', href: '#docs' },
+  { label: 'Skills', href: '#skills' },
   { label: 'News', href: '#news' },
   { label: 'Packages', href: '#packages' },
   { label: 'Models', href: '#models' },
@@ -166,6 +176,63 @@ const contextItems = [
     text: 'Extensions can inject, filter, retrieve with RAG, or attach long memory.',
   },
 ];
+
+const skillMatrix: SkillMatrixItem[] = [
+  {
+    stage: 'Full pipeline',
+    name: 'spark-to-ship',
+    description: 'Run the whole idea-to-release lane and delegate each stage to the right skill.',
+    command: 'pi install @type1skills/pi-spark',
+    featured: true,
+  },
+  {
+    stage: 'IDEAS',
+    name: 'new-ideas',
+    description: 'Generate and compare candidate ideas before they enter incubation.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+  {
+    stage: 'INCUBATING',
+    name: 'cook-idea',
+    description: 'Pressure-test an idea for value, feasibility, risk, and readiness.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+  {
+    stage: 'APPROVING',
+    name: 'approve-incubating',
+    description: 'Promote a ready idea into ordered TODOs with acceptance criteria.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+  {
+    stage: 'TODO',
+    name: 'solve-next-todo',
+    description: 'Pick the next actionable task, implement it, and run focused verification.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+  {
+    stage: 'DOING',
+    name: 'closeout-enforcer',
+    description: 'Enforce verification, docs, and handoff evidence before work is called done.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+  {
+    stage: 'DONE',
+    name: 'review',
+    description: 'Review completed work for bugs, regressions, risk, and missing tests.',
+    command: 'pi install @type1skills/pi-review',
+  },
+  {
+    stage: 'DONE',
+    name: 'release-enforcer',
+    description: 'Prepare verified work for source control, CI, and deployment handoff.',
+    command: 'pi install @type1skills/pi-spark',
+  },
+];
+
+const pipelineStages: SkillStage[] = ['IDEAS', 'INCUBATING', 'APPROVING', 'TODO', 'DOING', 'DONE'];
+
+const sparkSkill = skillMatrix.find((item) => item.name === 'spark-to-ship') ?? skillMatrix[0];
+const stagedSkills = skillMatrix.filter((item) => !item.featured);
 
 const modes: Mode[] = [
   {
@@ -327,9 +394,44 @@ function App() {
               and package install can be evaluated against its blast radius.
             </p>
             <p>
-              The skill matrix becomes the operating surface for deciding when to move fast, when to
-              ask for stronger evidence, and when to preserve a reversible path.
+              The <a href="#skills">skill matrix</a> becomes the operating surface for deciding
+              when to move fast, when to ask for stronger evidence, and when to preserve a
+              reversible path.
             </p>
+          </div>
+        </section>
+
+        <section className="section skills-section" id="skills" aria-labelledby="skills-heading">
+          <div className="section-heading">
+            <p className="eyebrow">DevOps workflow</p>
+            <h2 id="skills-heading">The skill matrix.</h2>
+            <p>
+              Install the spark pack once, then run the stage skill that matches the decision in
+              front of you.
+            </p>
+          </div>
+          <article className="skill-cta" aria-label="Full pipeline skill">
+            <div>
+              <span>{sparkSkill.stage}</span>
+              <h3>{sparkSkill.name}</h3>
+              <p>{sparkSkill.description}</p>
+            </div>
+            <code>{sparkSkill.command}</code>
+          </article>
+          <ol className="pipeline-rail" aria-label="Pipeline stages">
+            {pipelineStages.map((stage) => (
+              <li key={stage}>{stage}</li>
+            ))}
+          </ol>
+          <div className="skill-matrix-grid">
+            {stagedSkills.map((item) => (
+              <article key={item.name} className="skill-card">
+                <span>{item.stage}</span>
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+                <code>{item.command}</code>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -503,12 +605,12 @@ session: preserved`}
           <div className="primitive-layout">
             <div>
               <p>
-                Extensions are the primitives for advanced behavior. Package them as Type1 packages
-                and share them through npm or git, then install third-party packages directly in Pi.
+                Extensions are the primitives for advanced behavior. Package them as Type1 skill
+                packs, share them through the Pi registry or git, then install them directly in Pi.
               </p>
               <div className="package-command">
-                <code>pi install @acme/type1-review-gate</code>
-                <code>pi install git+https://github.com/acme/type1-ssh.git</code>
+                <code>pi install @type1skills/pi-spark</code>
+                <code>pi install git+https://github.com/your-org/custom-gates.git</code>
               </div>
             </div>
             <ul className="primitive-list">

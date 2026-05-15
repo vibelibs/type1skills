@@ -349,6 +349,8 @@ kbd {
 }
 
 .feature-grid article,
+.skill-cta,
+.skill-card,
 .history-cards article,
 .key-grid article,
 .not-built-grid article {
@@ -360,6 +362,7 @@ kbd {
 }
 
 .feature-grid article:nth-child(2n),
+.skill-card:nth-child(2n),
 .not-built-grid article:nth-child(2n) {
   background: var(--surface-strong);
 }
@@ -378,6 +381,8 @@ kbd {
 
 .command-strip code,
 .package-command code,
+.skill-cta code,
+.skill-card code,
 .history-cards code {
   display: inline-flex;
   width: fit-content;
@@ -387,6 +392,67 @@ kbd {
   background: var(--ink);
   color: var(--bg);
   overflow-wrap: anywhere;
+}
+
+.skills-section .section-heading p {
+  max-width: 720px;
+}
+
+.skill-cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.skill-cta span,
+.skill-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pipeline-rail {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.pipeline-rail li {
+  padding: 10px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.skill-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.skill-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.skill-card h3,
+.skill-card p {
+  margin-bottom: 0;
 }
 
 .provider-cloud {
@@ -631,9 +697,15 @@ kbd {
     grid-template-columns: 1fr;
   }
 
+  .skill-cta,
+  .pipeline-rail {
+    grid-template-columns: 1fr;
+  }
+
   .feature-grid,
   .context-grid,
   .history-cards,
+  .skill-matrix-grid,
   .not-built-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -678,6 +750,7 @@ kbd {
   .key-grid,
   .not-built-grid,
   .primitive-list,
+  .skill-matrix-grid,
   .provider-grid {
     grid-template-columns: 1fr;
   }
