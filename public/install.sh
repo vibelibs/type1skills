@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PACKAGE_SPEC="${TYPE1SKILLS_PACKAGE:-github:vibelibs/type1skills}"
+PACKAGE_SPEC="${TYPE1SKILLS_PACKAGE:-https://github.com/vibelibs/type1skills/archive/refs/heads/main.tar.gz}"
 PACKAGE_NAME="type1skills"
 
 say() {
