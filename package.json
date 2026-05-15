@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "description": "Independent public website for Type 1 Skills.",
   "type": "commonjs",
+  "files": [
+    "CONTRACTS.md",
+    "README.md",
+    "index.html",
+    "public/",
+    "skills/",
+    "src/",
+    "vite.config.ts"
+  ],
   "packageManager": "pnpm@10.31.0",
   "scripts": {
     "dev": "vite --strictPort",
