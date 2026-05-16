@@ -53,6 +53,17 @@ interface ReviewFragment {
   quote: string;
 }
 
+interface CaseLayer {
+  name: string;
+  role: string;
+  detail: string;
+}
+
+interface CaseStep {
+  title: string;
+  text: string;
+}
+
 const navItems = [
   { label: 'Home', href: '#home' },
   { label: 'Docs', href: '#docs' },
@@ -222,6 +233,76 @@ const reviewFragments: ReviewFragment[] = [
       'The contradiction resolves by scope: a highly opinionated decision spine with an extremely flexible ecosystem around it.',
   },
 ];
+
+const dueDiligenceLayers: CaseLayer[] = [
+  {
+    name: 'Type1Skills',
+    role: 'Main orchestrator',
+    detail:
+      'Classifies the acquisition as a Type 1 decision, tracks the decision tree, evaluates blast radius, and decides when to move fast or slow.',
+  },
+  {
+    name: 'LangGraph',
+    role: 'Deterministic workflow',
+    detail:
+      'Runs the central due diligence pipeline with shared state, explicit branches, checkpoints, and recovery when a step fails.',
+  },
+  {
+    name: 'AutoGen',
+    role: 'Specialist debate team',
+    detail:
+      'Coordinates legal, financial, and technical experts who argue, challenge assumptions, and reach consensus or a majority vote.',
+  },
+];
+
+const dueDiligenceSteps: CaseStep[] = [
+  {
+    title: 'Classify the one-way door',
+    text:
+      'The acquisition is logged as Type 1 because financial consolidation, team integration, and inherited liabilities are hard to reverse.',
+  },
+  {
+    title: 'Run the ordered analysis',
+    text:
+      'LangGraph executes legal, financial, and technical due diligence in a checkpointed workflow with explicit stop conditions.',
+  },
+  {
+    title: 'Escalate subjective calls',
+    text:
+      'When valuation or risk interpretation is uncertain, AutoGen brings multiple expert agents into a structured debate.',
+  },
+  {
+    title: 'Export the audit trail',
+    text:
+      'Type1Skills exports the decision tree, gates, delegations, and final recommendations into an HTML report for board review.',
+  },
+];
+
+const dueDiligenceCode = `session.log_decision_point({
+  type: "TYPE_1",
+  description: "Acquire AI startup for approx. BRL 50M",
+  irreversible_consequences: [
+    "financial consolidation",
+    "team integration",
+    "assumption of liabilities"
+  ]
+})
+
+workflow.add_conditional_edges("legal_analysis", should_continue, {
+  ABORT: END,
+  CONTINUE: "financial_analysis"
+})
+
+if (state.financial_health.valuation_uncertainty > 0.3) {
+  consensus = autogen.debate("What is the fair valuation?", state)
+  session.log_delegation({
+    delegate_to: "autogen",
+    type_decision: "TYPE_1",
+    consensus_reached: consensus
+  })
+}
+
+session.export_report("due_diligence_2026-05-16.html")`;
 
 const skillMatrix: SkillMatrixItem[] = [
   {
@@ -485,6 +566,72 @@ function App() {
                 <p>{item.quote}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="section case-section" aria-labelledby="case-title">
+          <div className="section-heading">
+            <p className="eyebrow">Implementation Case</p>
+            <h2 id="case-title">Due diligence for a high-risk startup acquisition.</h2>
+            <p>
+              Your company is evaluating the acquisition of an AI startup for approximately BRL
+              50M. This is a Type 1 decision: thousands of documents, legal exposure, financial
+              uncertainty, technical debt, and a final board-level recommendation that must be
+              reliable, traceable, and defensible.
+            </p>
+          </div>
+
+          <div className="case-architecture" aria-label="Integrated architecture">
+            <div className="case-user">User</div>
+            <div className="case-spine">Type1Skills keeps the irreversible decision spine visible.</div>
+            <div className="case-branch-grid">
+              {dueDiligenceLayers.map((layer) => (
+                <article key={layer.name}>
+                  <span>{layer.role}</span>
+                  <h3>{layer.name}</h3>
+                  <p>{layer.detail}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="case-flow-grid">
+            {dueDiligenceSteps.map((step, index) => (
+              <article key={step.title}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="case-code-layout">
+            <div>
+              <h3>How the systems communicate</h3>
+              <p>
+                Type1Skills starts the session and records every decision point. LangGraph runs the
+                ordered workflow and stops on hard gates. AutoGen is invoked only when the workflow
+                reaches a judgment-heavy question that benefits from legal, financial, and technical
+                disagreement.
+              </p>
+              <div className="case-summary-grid">
+                <article>
+                  <strong>Type1Skills</strong>
+                  <span>Strategy: is this reversible?</span>
+                </article>
+                <article>
+                  <strong>LangGraph</strong>
+                  <span>Tactics: what is the correct order?</span>
+                </article>
+                <article>
+                  <strong>AutoGen</strong>
+                  <span>Execution: which experts should debate?</span>
+                </article>
+              </div>
+            </div>
+            <pre>
+              <code>{dueDiligenceCode}</code>
+            </pre>
           </div>
         </section>
 

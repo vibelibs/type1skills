@@ -408,6 +408,107 @@ kbd {
   background: var(--surface-strong);
 }
 
+.case-architecture {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.case-user,
+.case-spine {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.case-spine {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.case-branch-grid,
+.case-flow-grid,
+.case-summary-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.case-branch-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.case-flow-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.case-branch-grid article,
+.case-flow-grid article,
+.case-summary-grid article {
+  min-height: 100%;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.case-branch-grid article:nth-child(2n),
+.case-flow-grid article:nth-child(2n),
+.case-summary-grid article:nth-child(2n) {
+  background: var(--surface-strong);
+}
+
+.case-branch-grid span,
+.case-flow-grid span,
+.case-summary-grid span {
+  display: block;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.case-branch-grid article > span,
+.case-flow-grid article > span {
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.case-code-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.case-code-layout > div {
+  padding: 24px;
+}
+
+.case-code-layout pre {
+  padding: 22px;
+  background: #111923;
+  color: #d6f6ec;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.case-summary-grid {
+  grid-template-columns: 1fr;
+  margin-top: 18px;
+}
+
+.case-summary-grid strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
 .command-strip {
   display: flex;
   flex-wrap: wrap;
@@ -734,6 +835,7 @@ kbd {
   .model-workbench,
   .history-layout,
   .mode-preview,
+  .case-code-layout,
   .primitive-layout {
     grid-template-columns: 1fr;
   }
@@ -747,6 +849,8 @@ kbd {
   .context-grid,
   .history-cards,
   .review-grid,
+  .case-branch-grid,
+  .case-flow-grid,
   .skill-matrix-grid,
   .not-built-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -791,6 +895,8 @@ kbd {
   .history-cards,
   .key-grid,
   .review-grid,
+  .case-branch-grid,
+  .case-flow-grid,
   .not-built-grid,
   .primitive-list,
   .skill-matrix-grid,
