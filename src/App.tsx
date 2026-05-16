@@ -484,6 +484,10 @@ function App() {
           <div className="hero-copy">
             <p className="eyebrow">Type 1 risk coding harness</p>
             <h1 id="hero-title">There are many agent harnesses, but this one is yours.</h1>
+            <p className="hero-callout">
+              Type1Skills helps product builders separate reversible decisions from irreversible
+              ones and create auditable trails for AI workflows, agents, and critical operations.
+            </p>
             <p className="hero-lede">
               Designed for product engineers and teams orchestrating AI agents who need
               structured, auditable, and reversible decision paths for complex or high-stakes
