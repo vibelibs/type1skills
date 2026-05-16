@@ -57,9 +57,21 @@ const installCommands: InstallCommand[] = [
     label: 'curl',
     command: 'curl -fsSL https://www.type1skills.com/install.sh | sh',
   },
-  { id: 'npm', label: 'npm', command: 'npm install -g type1skills' },
-  { id: 'pnpm', label: 'pnpm', command: 'pnpm add -g type1skills' },
-  { id: 'bun', label: 'bun', command: 'bun add -g type1skills' },
+  {
+    id: 'npm',
+    label: 'npm',
+    command: 'npm install -g https://github.com/vibelibs/type1skills/archive/refs/heads/main.tar.gz',
+  },
+  {
+    id: 'pnpm',
+    label: 'pnpm',
+    command: 'pnpm add -g https://github.com/vibelibs/type1skills/archive/refs/heads/main.tar.gz',
+  },
+  {
+    id: 'bun',
+    label: 'bun',
+    command: 'bun add -g https://github.com/vibelibs/type1skills/archive/refs/heads/main.tar.gz',
+  },
 ];
 
 const themeModes: Array<{ id: ThemeMode; label: string }> = [
@@ -181,51 +193,51 @@ const skillMatrix: SkillMatrixItem[] = [
   {
     stage: 'Full pipeline',
     name: 'spark-to-ship',
-    description: 'Run the whole idea-to-release lane and delegate each stage to the right skill.',
+    description: 'Install the full operating lane: ideation, debate, approval, implementation, closeout, review, and release.',
     command: 'type1skills install @type1skills/spark',
     featured: true,
   },
   {
     stage: 'IDEAS',
     name: 'new-ideas',
-    description: 'Generate and compare candidate ideas before they enter incubation.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Turn rough market signals into ranked product bets with Type 1 risk notes attached.',
+    command: 'type1skills install @type1skills/ideas',
   },
   {
     stage: 'INCUBATING',
     name: 'cook-idea',
-    description: 'Pressure-test an idea for value, feasibility, risk, and readiness.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Run an optimistic versus cautious debate before a shiny idea starts consuming roadmap.',
+    command: 'type1skills install @type1skills/incubator',
   },
   {
     stage: 'APPROVING',
     name: 'approve-incubating',
-    description: 'Promote a ready idea into ordered TODOs with acceptance criteria.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Promote a proven idea into acceptance criteria, owner-ready TODOs, and a reversible first step.',
+    command: 'type1skills install @type1skills/approval',
   },
   {
     stage: 'TODO',
     name: 'solve-next-todo',
-    description: 'Pick the next actionable task, implement it, and run focused verification.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Pick the next meaningful task, ship the smallest credible slice, and prove it with focused tests.',
+    command: 'type1skills install @type1skills/todo',
   },
   {
     stage: 'DOING',
     name: 'closeout-enforcer',
-    description: 'Enforce verification, docs, and handoff evidence before work is called done.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Force the last mile: verification evidence, docs impact, graph sync, and handoff clarity.',
+    command: 'type1skills install @type1skills/closeout',
   },
   {
     stage: 'DONE',
     name: 'review',
-    description: 'Review completed work for bugs, regressions, risk, and missing tests.',
+    description: 'Put a reviewer in the loop that hunts regressions, missing tests, and irreversible mistakes first.',
     command: 'type1skills install @type1skills/review',
   },
   {
     stage: 'DONE',
     name: 'release-enforcer',
-    description: 'Prepare verified work for source control, CI, and deployment handoff.',
-    command: 'type1skills install @type1skills/spark',
+    description: 'Turn verified work into a release path: source control, CI gates, deploy handoff, and rollback notes.',
+    command: 'type1skills install @type1skills/release',
   },
 ];
 
@@ -406,8 +418,8 @@ function App() {
             <p className="eyebrow">DevOps workflow</p>
             <h2 id="skills-heading">The skill matrix.</h2>
             <p>
-              Install the spark pack once, then run the stage skill that matches the decision in
-              front of you.
+              Install the harness once. Then activate the exact pack each repo needs, from a single
+              reviewer skill to the complete spark-to-ship operating lane.
             </p>
           </div>
           <article className="skill-cta" aria-label="Full pipeline skill">

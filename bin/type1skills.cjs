@@ -19,7 +19,13 @@ const skillPacks = new Map([
     'review.md',
     'release-enforcer.md',
   ]],
+  ['@type1skills/ideas', ['new-ideas.md']],
+  ['@type1skills/incubator', ['cook-idea.md']],
+  ['@type1skills/approval', ['approve-incubating.md']],
+  ['@type1skills/todo', ['solve-next-todo.md']],
+  ['@type1skills/closeout', ['closeout-enforcer.md']],
   ['@type1skills/review', ['review.md']],
+  ['@type1skills/release', ['release-enforcer.md']],
 ]);
 
 function printHelp() {
@@ -27,11 +33,12 @@ function printHelp() {
 
 Usage:
   type1skills install @type1skills/spark
+  type1skills install @type1skills/ideas
   type1skills install @type1skills/review
   type1skills --version
 
 Commands:
-  install <package>  Install a Type1Skills package into .type1skills/skills
+  install <package>  Activate a bundled Type1Skills pack in .type1skills/skills
   help               Show this help
 
 Type1Skills is an independent Type 1 risk harness for coding agents.
