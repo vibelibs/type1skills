@@ -376,8 +376,10 @@ function App() {
             <p className="eyebrow">Type 1 risk coding harness</p>
             <h1 id="hero-title">There are many agent harnesses, but this one is yours.</h1>
             <p className="hero-lede">
-              Type1Skills adapts around your workflow and treats irreversible engineering choices as
-              the spine of agent reasoning.
+              Designed for product engineers and teams orchestrating AI agents who need
+              structured, auditable, and reversible decision paths for complex or high-stakes
+              engineering workflows. Type1Skills is built for serious agent deployment:
+              engineering rigor, auditability, and workflow integration over disposable simplicity.
             </p>
             <div className="hero-actions" aria-label="Community links">
               {communityLinks.map((link) => (
