@@ -367,6 +367,47 @@ kbd {
   background: var(--surface-strong);
 }
 
+.review-pull {
+  margin: 0 0 16px;
+  padding: 24px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+
+.review-pull blockquote {
+  margin: 0;
+  max-width: 900px;
+  color: var(--ink);
+  font-size: clamp(1.25rem, 3vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.16;
+}
+
+.review-pull figcaption {
+  margin-top: 16px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.review-grid article {
+  min-height: 100%;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.review-grid article:nth-child(2n) {
+  background: var(--surface-strong);
+}
+
 .command-strip {
   display: flex;
   flex-wrap: wrap;
@@ -705,6 +746,7 @@ kbd {
   .feature-grid,
   .context-grid,
   .history-cards,
+  .review-grid,
   .skill-matrix-grid,
   .not-built-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -748,6 +790,7 @@ kbd {
   .context-grid,
   .history-cards,
   .key-grid,
+  .review-grid,
   .not-built-grid,
   .primitive-list,
   .skill-matrix-grid,

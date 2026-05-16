@@ -48,6 +48,11 @@ interface OfficialPlugin {
   command: string;
 }
 
+interface ReviewFragment {
+  title: string;
+  quote: string;
+}
+
 const navItems = [
   { label: 'Home', href: '#home' },
   { label: 'Docs', href: '#docs' },
@@ -192,6 +197,29 @@ const contextItems = [
   {
     title: 'Dynamic context',
     text: 'Extensions can inject, filter, retrieve with RAG, or attach long memory.',
+  },
+];
+
+const reviewFragments: ReviewFragment[] = [
+  {
+    title: 'Opinionated about the spine',
+    quote:
+      'Type1Skills is rigid about what matters: reversibility. Type 1 and Type 2 decisions, tree structure, and the skill matrix are not optional.',
+  },
+  {
+    title: 'Flexible about the surface',
+    quote:
+      'It does not force a specific LLM provider, code editor, git workflow, deployment target, theme, extension, or prompt template.',
+  },
+  {
+    title: 'Refusal as product opinion',
+    quote:
+      'The list of things Type1Skills does not hard-code is itself an opinion: keep the core small and let extensions own the periphery.',
+  },
+  {
+    title: 'Constrained flexibility',
+    quote:
+      'The contradiction resolves by scope: a highly opinionated decision spine with an extremely flexible ecosystem around it.',
   },
 ];
 
@@ -431,6 +459,32 @@ function App() {
               when to move fast, when to ask for stronger evidence, and when to preserve a
               reversible path.
             </p>
+          </div>
+        </section>
+
+        <section className="section review-section" aria-labelledby="review-title">
+          <div className="section-heading">
+            <p className="eyebrow">Customer Review</p>
+            <h2 id="review-title">Constrained flexibility.</h2>
+            <p>
+              A developer-tools journalist framed Type1Skills as a harness that is strict about
+              decision discipline and flexible about the implementation details.
+            </p>
+          </div>
+          <figure className="review-pull">
+            <blockquote>
+              Type1Skills says: you must use a decision spine. You can still use any provider,
+              theme, extension, or prompt template you want.
+            </blockquote>
+            <figcaption>Independent developer-tools analysis</figcaption>
+          </figure>
+          <div className="review-grid">
+            {reviewFragments.map((item) => (
+              <article key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.quote}</p>
+              </article>
+            ))}
           </div>
         </section>
 
