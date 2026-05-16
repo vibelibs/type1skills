@@ -384,6 +384,11 @@ kbd {
   background: var(--accent-soft);
 }
 
+.review-pull-secondary {
+  border-color: var(--line-strong);
+  background: var(--surface-strong);
+}
+
 .review-pull blockquote {
   margin: 0;
   max-width: 900px;

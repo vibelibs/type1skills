@@ -563,6 +563,16 @@ function App() {
             </blockquote>
             <figcaption>Independent developer-tools analysis</figcaption>
           </figure>
+          <figure className="review-pull review-pull-secondary">
+            <blockquote>
+              Type1Skills clearly differentiates itself from LangGraph, AutoGen, CrewAI, and
+              similar tools. LangGraph is known for durable execution, checkpoints, and persistent
+              state; AutoGen is known for multi-agent collaboration. Type1Skills occupies the layer
+              above: decision, risk, reversibility, and auditability. That is governance in the age
+              of AI.
+            </blockquote>
+            <figcaption>Client testimony</figcaption>
+          </figure>
           <div className="review-grid">
             {reviewFragments.map((item) => (
               <article key={item.title}>
