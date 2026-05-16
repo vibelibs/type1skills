@@ -42,6 +42,12 @@ interface SkillMatrixItem {
   featured?: boolean;
 }
 
+interface OfficialPlugin {
+  name: string;
+  description: string;
+  command: string;
+}
+
 const navItems = [
   { label: 'Home', href: '#home' },
   { label: 'Docs', href: '#docs' },
@@ -288,6 +294,19 @@ const primitiveFeatures = [
   'Custom editors',
   'Status bars',
   'Overlays',
+];
+
+const officialPlugins: OfficialPlugin[] = [
+  {
+    name: 'Ideas Radar',
+    description: 'A static innovation cockpit for accepted, incubating, inbox, and rejected ideas.',
+    command: 'type1skills plugin install @type1skills/ideas-radar',
+  },
+  {
+    name: 'Skill Matrix',
+    description: 'Skill usage, usefulness, runtime pressure, and token consumption per skill.',
+    command: 'type1skills plugin install @type1skills/skill-matrix',
+  },
 ];
 
 const notBuilt = [
@@ -623,6 +642,7 @@ session: preserved`}
               </p>
               <div className="package-command">
                 <code>type1skills install @type1skills/spark</code>
+                <code>type1skills plugin install @type1skills/skill-matrix</code>
                 <code>type1skills install git+https://github.com/your-org/custom-gates.git</code>
               </div>
             </div>
@@ -631,6 +651,15 @@ session: preserved`}
                 <li key={item}>{item}</li>
               ))}
             </ul>
+          </div>
+          <div className="feature-grid official-plugin-grid" aria-label="Official plugins">
+            {officialPlugins.map((plugin) => (
+              <article key={plugin.name}>
+                <h3>{plugin.name}</h3>
+                <p>{plugin.description}</p>
+                <code>{plugin.command}</code>
+              </article>
+            ))}
           </div>
         </section>
 

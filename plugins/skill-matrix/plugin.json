@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "name": "@type1skills/skill-matrix",
+  "displayName": "Skill Matrix",
+  "version": "0.1.0",
+  "description": "Static skill observability plugin for usage, outcomes, runtime, and token consumption per Type1Skills skill.",
+  "entry": "app/index.html",
+  "skills": [
+    "skills/skill-matrix.md"
+  ],
+  "schemas": [
+    "schemas/skill-matrix.snapshot.schema.json"
+  ],
+  "commands": [
+    {
+      "name": "type1skills skill-matrix snapshot",
+      "description": "Build .type1skills/skill-matrix/snapshot.json from skill history and token budget ledgers."
+    },
+    {
+      "name": "type1skills skill-matrix open",
+      "description": "Open the static skill matrix dashboard for the latest snapshot."
+    }
+  ],
+  "reads": [
+    ".type1skills/skills/**/*.md",
+    ".type1skills/metrics/skill-runs.jsonl",
+    ".type1skills/metrics/skill-budget/*.jsonl",
+    "memory/skill-history/runs.jsonl",
+    "memory/skill-budget/*.jsonl"
+  ],
+  "writes": [
+    ".type1skills/skill-matrix/snapshot.json"
+  ]
+}

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Type1Skills Skill Matrix</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f7f6f2;
+        color: #161616;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 32px 18px 48px;
+      }
+
+      header {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 1;
+      }
+
+      p {
+        color: #4b4b4b;
+        margin: 0;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+        margin: 24px 0;
+      }
+
+      .metric,
+      table {
+        background: #ffffff;
+        border: 1px solid #dedbd2;
+        border-radius: 8px;
+      }
+
+      .metric {
+        padding: 14px;
+      }
+
+      .metric span {
+        color: #666;
+        display: block;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.6rem;
+        margin-top: 6px;
+      }
+
+      table {
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #ebe8df;
+        font-size: 0.92rem;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        color: #555;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      code {
+        background: #ebe8df;
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          background: #151515;
+          color: #f5f2ea;
+        }
+
+        p {
+          color: #c8c0b1;
+        }
+
+        .metric,
+        table {
+          background: #202020;
+          border-color: #36342f;
+        }
+
+        th,
+        td {
+          border-bottom-color: #33312c;
+        }
+
+        th,
+        .metric span {
+          color: #b7ad9e;
+        }
+
+        code {
+          background: #2d2b27;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p>Type1Skills plugin</p>
+        <h1>Skill Matrix</h1>
+        <p>Usage, usefulness, runtime, and token pressure per skill.</p>
+      </header>
+
+      <section class="summary" aria-label="Summary">
+        <article class="metric">
+          <span>Skills</span>
+          <strong id="total-skills">0</strong>
+        </article>
+        <article class="metric">
+          <span>Observed uses</span>
+          <strong id="total-uses">0</strong>
+        </article>
+        <article class="metric">
+          <span>Total tokens</span>
+          <strong id="total-tokens">0</strong>
+        </article>
+        <article class="metric">
+          <span>Token samples</span>
+          <strong id="token-samples">0</strong>
+        </article>
+      </section>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Skill</th>
+            <th>Uses</th>
+            <th>Avg tokens</th>
+            <th>Total tokens</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="skill-rows">
+          <tr>
+            <td colspan="5">Generate <code>.type1skills/skill-matrix/snapshot.json</code> to load live data.</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <script>
+      const fallbackSnapshot = {
+        summary: {
+          totalSkills: 0,
+          totalUses: 0,
+          totalTokens: 0,
+          tokenSamples: 0
+        },
+        skills: []
+      };
+
+      function formatCount(value) {
+        if (value == null) return 'n/a';
+        if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+        if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+        return String(value);
+      }
+
+      function render(snapshot) {
+        document.getElementById('total-skills').textContent = formatCount(snapshot.summary.totalSkills);
+        document.getElementById('total-uses').textContent = formatCount(snapshot.summary.totalUses);
+        document.getElementById('total-tokens').textContent = formatCount(snapshot.summary.totalTokens);
+        document.getElementById('token-samples').textContent = formatCount(snapshot.summary.tokenSamples);
+
+        const rows = document.getElementById('skill-rows');
+        const skills = [...(snapshot.skills || [])]
+          .sort((left, right) => (right.tokens?.totalTokens || 0) - (left.tokens?.totalTokens || 0))
+          .slice(0, 24);
+
+        if (skills.length === 0) return;
+        rows.innerHTML = skills.map((skill) => `
+          <tr>
+            <td>${skill.displayName || skill.id}</td>
+            <td>${formatCount(skill.usage?.totalUses || 0)}</td>
+            <td>${formatCount(skill.tokens?.averageTotalTokens)}</td>
+            <td>${formatCount(skill.tokens?.totalTokens || 0)}</td>
+            <td>${skill.classes?.costImportance || 'on-demand'}</td>
+          </tr>
+        `).join('');
+      }
+
+      fetch('../snapshot.json')
+        .then((response) => response.ok ? response.json() : fallbackSnapshot)
+        .catch(() => fallbackSnapshot)
+        .then(render);
+    </script>
+  </body>
+</html>

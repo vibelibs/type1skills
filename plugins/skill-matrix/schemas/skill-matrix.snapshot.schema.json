@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.type1skills.com/schemas/skill-matrix.snapshot.schema.json",
+  "title": "Type1Skills Skill Matrix Snapshot",
+  "type": "object",
+  "required": [
+    "generatedAt",
+    "summary",
+    "skills"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "totalSkills",
+        "observedSkills",
+        "totalUses",
+        "tokenBudgetSkills",
+        "tokenSamples",
+        "totalInputTokens",
+        "totalOutputTokens",
+        "totalTokens"
+      ],
+      "properties": {
+        "totalSkills": { "type": "integer", "minimum": 0 },
+        "observedSkills": { "type": "integer", "minimum": 0 },
+        "totalUses": { "type": "integer", "minimum": 0 },
+        "tokenBudgetSkills": { "type": "integer", "minimum": 0 },
+        "tokenSamples": { "type": "integer", "minimum": 0 },
+        "totalInputTokens": { "type": "integer", "minimum": 0 },
+        "totalOutputTokens": { "type": "integer", "minimum": 0 },
+        "totalTokens": { "type": "integer", "minimum": 0 },
+        "averageTokensPerSample": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "displayName",
+          "usage",
+          "tokens",
+          "classes",
+          "recommendations"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "displayName": { "type": "string" },
+          "usage": {
+            "type": "object",
+            "required": [
+              "totalUses"
+            ],
+            "properties": {
+              "totalUses": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": true
+          },
+          "tokens": {
+            "type": "object",
+            "required": [
+              "samples",
+              "inputTokens",
+              "outputTokens",
+              "totalTokens",
+              "averageTotalTokens"
+            ],
+            "properties": {
+              "samples": { "type": "integer", "minimum": 0 },
+              "inputTokens": { "type": "integer", "minimum": 0 },
+              "outputTokens": { "type": "integer", "minimum": 0 },
+              "totalTokens": { "type": "integer", "minimum": 0 },
+              "averageInputTokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "averageOutputTokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "averageTotalTokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "averageLatencyMs": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "budgetClasses": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "classes": {
+            "type": "object",
+            "properties": {
+              "costImportance": {
+                "enum": [
+                  "protect",
+                  "optimize",
+                  "tune",
+                  "trim",
+                  "on-demand"
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          "recommendations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

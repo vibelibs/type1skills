@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "@type1skills/ideas-radar",
+  "displayName": "Ideas Radar",
+  "version": "0.1.0",
+  "description": "Static innovation cockpit for accepted, incubating, inbox, and rejected ideas.",
+  "entry": "app/index.html",
+  "skills": [
+    "skills/ideas-radar.md"
+  ],
+  "schemas": [
+    "schemas/ideas-radar.snapshot.schema.json"
+  ],
+  "commands": [
+    {
+      "name": "type1skills ideas-radar snapshot",
+      "description": "Build .type1skills/ideas-radar/snapshot.json from IDEAS.md, TODO.md, idea docs, and task capsules."
+    },
+    {
+      "name": "type1skills ideas-radar open",
+      "description": "Open the static Ideas Radar dashboard for the latest snapshot."
+    }
+  ],
+  "reads": [
+    "IDEAS.md",
+    "TODO.md",
+    "workflow/IDEAS.md",
+    "workflow/TODO.md",
+    "workflow/docs/ideas/**/*.md",
+    "workflow/docs/tasks/TODO-*.md"
+  ],
+  "writes": [
+    ".type1skills/ideas-radar/snapshot.json"
+  ]
+}

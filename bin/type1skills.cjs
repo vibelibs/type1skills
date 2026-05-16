@@ -28,6 +28,11 @@ const skillPacks = new Map([
   ['@type1skills/release', ['release-enforcer.md']],
 ]);
 
+const pluginPacks = new Map([
+  ['@type1skills/ideas-radar', 'ideas-radar'],
+  ['@type1skills/skill-matrix', 'skill-matrix'],
+]);
+
 function printHelp() {
   process.stdout.write(`Type1Skills ${packageJson.version}
 
@@ -35,10 +40,14 @@ Usage:
   type1skills install @type1skills/spark
   type1skills install @type1skills/ideas
   type1skills install @type1skills/review
+  type1skills plugin install @type1skills/ideas-radar
+  type1skills plugin install @type1skills/skill-matrix
   type1skills --version
 
 Commands:
   install <package>  Activate a bundled Type1Skills pack in .type1skills/skills
+  plugin install     Install a bundled Type1Skills plugin in .type1skills/plugins
+  plugin list        Show bundled Type1Skills plugins
   help               Show this help
 
 Type1Skills is an independent Type 1 risk harness for coding agents.
@@ -47,6 +56,12 @@ Type1Skills is an independent Type 1 risk harness for coding agents.
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function copyDirectory(sourceDir, targetDir) {
+  fs.rmSync(targetDir, { recursive: true, force: true });
+  ensureDir(path.dirname(targetDir));
+  fs.cpSync(sourceDir, targetDir, { recursive: true });
 }
 
 function installPack(packageName) {
@@ -78,7 +93,39 @@ ${files.map((fileName) => `- ${fileName}`).join('\n')}
 `);
 }
 
-const [, , command, arg] = process.argv;
+function listPlugins() {
+  process.stdout.write(`Bundled Type1Skills plugins:
+${Array.from(pluginPacks.keys()).map((name) => `- ${name}`).join('\n')}
+`);
+}
+
+function installPlugin(packageName) {
+  const pluginDirName = pluginPacks.get(packageName);
+
+  if (!pluginDirName) {
+    process.stderr.write(`Unknown Type1Skills plugin: ${packageName}
+
+Available plugins:
+  ${Array.from(pluginPacks.keys()).join('\n  ')}
+
+Third-party plugin installers are part of the extension contract, but this preview CLI only installs bundled plugins.
+`);
+    process.exit(1);
+  }
+
+  const sourceDir = path.join(packageRoot, 'plugins', pluginDirName);
+  const targetDir = path.join(process.cwd(), '.type1skills', 'plugins', pluginDirName);
+  const manifestPath = path.join(sourceDir, 'plugin.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  copyDirectory(sourceDir, targetDir);
+  const installedFiles = ['plugin.json', manifest.entry, ...(manifest.schemas ?? [])].filter(Boolean);
+
+  process.stdout.write(`Installed ${packageName} into ${path.relative(process.cwd(), targetDir) || targetDir}
+${installedFiles.map((fileName) => `- ${fileName}`).join('\n')}
+`);
+}
+
+const [, , command, arg, extraArg] = process.argv;
 
 if (!command || command === 'help' || command === '--help' || command === '-h') {
   printHelp();
@@ -91,6 +138,21 @@ if (!command || command === 'help' || command === '--help' || command === '-h') 
   }
 
   installPack(arg);
+} else if (command === 'plugin') {
+  if (arg === 'list') {
+    listPlugins();
+  } else if (arg === 'install') {
+    if (!extraArg) {
+      process.stderr.write('Missing plugin name. Try: type1skills plugin install @type1skills/skill-matrix\n');
+      process.exit(1);
+    }
+
+    installPlugin(extraArg);
+  } else {
+    process.stderr.write(`Unknown plugin command: ${arg ?? ''}\n\n`);
+    printHelp();
+    process.exit(1);
+  }
 } else {
   process.stderr.write(`Unknown command: ${command}\n\n`);
   printHelp();
