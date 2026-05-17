@@ -23,6 +23,10 @@
     "build": "vite build",
     "preview": "vite preview --strictPort",
     "typecheck": "tsc --noEmit",
+    "docker:harness": "docker build -f Dockerfile.harness -t type1skills:harness-review . && mkdir -p .harness-review-results && docker run --rm --network none -v \"$PWD/.harness-review-results:/review/results\" type1skills:harness-review",
+    "docker:harness:build": "docker build -f Dockerfile.harness -t type1skills:harness-review .",
+    "docker:harness:smoke": "mkdir -p .harness-review-results && docker run --rm --network none -v \"$PWD/.harness-review-results:/review/results\" type1skills:harness-review",
+    "docker:harness:shell": "mkdir -p .harness-review-results && docker run --rm -it --network none -v \"$PWD/.harness-review-results:/review/results\" --entrypoint sh type1skills:harness-review",
     "pages:dev": "pnpm run build && npx wrangler pages dev dist",
     "pages:deploy": "pnpm run build && npx wrangler pages deploy dist --project-name type1skills"
   },
