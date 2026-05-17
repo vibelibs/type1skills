@@ -31,6 +31,40 @@ From inside this repo, the same command is:
 pnpm run build
 ```
 
+## Harness Review In Docker
+
+Use the harness review container when you want to test Type1Skills as a fresh
+CLI install without sharing local Codex, Claude, Copilot, npm, or shell state.
+It packages the current repo, installs the `type1skills` command globally in a
+clean Linux image, switches to an unprivileged user, disables runtime network,
+and runs the install flow inside a disposable product-review project.
+
+From inside this repo:
+
+```bash
+pnpm run docker:harness
+```
+
+Or with Docker Compose:
+
+```bash
+docker compose -f compose.harness.yml run --rm harness-review
+```
+
+The smoke review verifies:
+
+- `type1skills --version`
+- bundled plugin listing
+- unknown package rejection
+- `type1skills install @type1skills/spark`
+- `type1skills install @type1skills/review`
+- bundled plugin installation for Ideas Radar and Skill Matrix
+- no `.codex`, `.claude`, or Copilot home configuration is visible in the clean
+  container user
+
+The JSON result is written to `.harness-review-results/harness-review.json`,
+which is ignored by Git.
+
 ## Cloudflare Pages
 
 ```bash

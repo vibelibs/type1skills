@@ -1,0 +1,14 @@
+name: type1skills-harness-review
+
+services:
+  harness-review:
+    build:
+      context: .
+      dockerfile: Dockerfile.harness
+    image: type1skills:harness-review
+    network_mode: none
+    environment:
+      TYPE1SKILLS_REVIEW_ROOT: /review/target-product
+      TYPE1SKILLS_STRICT_ENV: "1"
+    volumes:
+      - ./.harness-review-results:/review/results
