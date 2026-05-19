@@ -482,17 +482,18 @@ function App() {
       <main>
         <section className="hero" id="home" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">Type 1 risk coding harness</p>
+            <p className="eyebrow">Free · Open Source · MIT Licensed</p>
             <h1 id="hero-title">There are many agent harnesses, but this one is yours.</h1>
             <p className="hero-callout">
-              Type1Skills helps product builders separate reversible decisions from irreversible
-              ones and create auditable trails for AI workflows, agents, and critical operations.
+              Type1Skills gives your AI workflows a decision spine. Every action is classified as
+              reversible or irreversible, logged, and auditable before consequences become permanent.
             </p>
             <p className="hero-lede">
-              Designed for product engineers and teams orchestrating AI agents who need
-              structured, auditable, and reversible decision paths for complex or high-stakes
-              engineering workflows. Type1Skills is built for serious agent deployment:
-              engineering rigor, auditability, and workflow integration over disposable simplicity.
+              Built for product engineers and teams running AI agents in high-stakes environments.
+              Apply the Type&nbsp;1&nbsp;/&nbsp;Type&nbsp;2 decision framework directly inside
+              your orchestration layer — move fast on reversible calls, apply the right scrutiny
+              before crossing one-way doors. Free, MIT-licensed, and community-driven.
+              No vendor lock-in. No licensing fees. Extend it, contribute to it, deploy it anywhere.
             </p>
             <div className="hero-actions" aria-label="Community links">
               {communityLinks.map((link) => (
@@ -505,8 +506,8 @@ function App() {
 
           <div className="install-panel" aria-label="Install Type1Skills">
             <div className="install-head">
-              <span>Install Type1Skills</span>
-              <span>shell, npm, pnpm, bun</span>
+              <span>Install Type1Skills — Free</span>
+              <span>shell · npm · pnpm · bun · no account required</span>
             </div>
             <div className="install-tabs" role="tablist" aria-label="Install commands">
               {installCommands.map((item) => (
@@ -531,18 +532,18 @@ function App() {
         <section className="section intro-grid" id="docs" aria-labelledby="why-title">
           <div>
             <p className="eyebrow">Why Type1?</p>
-            <h2 id="why-title">Why Type1?</h2>
+            <h2 id="why-title">One-way doors deserve a different harness.</h2>
           </div>
           <div className="intro-copy">
             <p>
-              Jeff Bezos described Type 1 decisions as consequential and hard to reverse. Type1Skills
-              brings that idea inside the agent harness: every branch, model switch, context choice,
-              and package install can be evaluated against its blast radius.
+              Jeff Bezos described Type&nbsp;1 decisions as consequential and hard to reverse.
+              Type1Skills brings that framework inside the agent harness: every branch, model switch,
+              context choice, and operation is evaluated against its blast radius before it executes.
             </p>
             <p>
               The <a href="#skills">skill matrix</a> becomes the operating surface for deciding
               when to move fast, when to ask for stronger evidence, and when to preserve a
-              reversible path.
+              reversible path. Free to use, free to extend, and free to ship.
             </p>
           </div>
         </section>
@@ -897,11 +898,13 @@ session: preserved`}
 
         <section className="section get-involved" id="news" aria-labelledby="involved-title">
           <div>
-            <p className="eyebrow">Docs, news, packages, models</p>
-            <h2 id="involved-title">Get involved with Type1.</h2>
+            <p className="eyebrow">Free · Open Source · Community-Built</p>
+            <h2 id="involved-title">Join the Type1Skills community.</h2>
             <p>
-              Follow releases, publish packages, propose model adapters, and help shape the public
-              harness contract before the first stable release.
+              Type1Skills is free and MIT-licensed — no paywalls, no enterprise tiers, no lock-in.
+              Follow releases, publish skill packs, propose model adapters, and help shape the
+              decision-spine contract. Every contribution makes auditable AI deployment more
+              accessible for everyone.
             </p>
           </div>
           <div className="involved-links">
@@ -918,7 +921,8 @@ session: preserved`}
       </main>
 
       <footer className="site-footer">
-        <a href="https://github.com/vibelibs/type1skills/graphs/contributors">List of Contributors</a>
+        <span>Free and open source.</span>
+        <a href="https://github.com/vibelibs/type1skills/graphs/contributors">Contributors</a>
         <a href="/press-kit">Press Kit</a>
         <a href="https://github.com/vibelibs/type1skills/blob/main/LICENSE">MIT License</a>
       </footer>
